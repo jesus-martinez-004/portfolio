@@ -4,10 +4,33 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc && tsc-alias"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs"
+  "type": "commonjs",
+  "dependencies": {
+    "@prisma/client": "^6.19.0",
+    "@types/express": "^5.0.5",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "dns": "^0.2.2",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "pino": "^10.1.0",
+    "tsc-alias": "^1.8.16",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/jsonwebtoken": "^9.0.10",
+    "prisma": "^6.19.0"
+  },
+  "prisma": {
+    "schema": "./src/infra/db/prisma/schema.prisma"
+  }
 }

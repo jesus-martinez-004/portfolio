@@ -1,14 +1,9 @@
-const start = () => {
-    console.log("Iniciando")
-}
+import { createServer } from "./config/server";
+import { env } from "./config/env";
+import { logger } from "@logger/logger";
 
-const restart = () => {
-    console.log("Reiniciando")
-}
+const app = createServer();
 
-const commands = {
-    "start": start,
-    "restart": restart
-}
-
-console.log(JSON.stringify(commands.restart.toString()))
+app.listen(env.PORT, () => {
+    logger.info(`🚀 Server running on port ${env.PORT}`);
+});

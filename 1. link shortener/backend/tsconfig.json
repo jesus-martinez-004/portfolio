@@ -1,7 +1,12 @@
 {
     "compilerOptions": {
-        "target": "ES2016", /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
-        "module": "Preserve", /* Specify what module code is generated. */
+        "typeRoots": [
+            "./node_modules/@types",
+            "./src/@types"
+        ],
+        "target": "es2020", /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
+        "module": "commonjs", /* Specify what module code is generated. */
+        "moduleResolution": "node", /* Specify how TypeScript looks up a file from a given module specifier. */
         "declaration": false, /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
         "declarationMap": false, /* Create sourcemaps for d.ts files. */
         "sourceMap": false, /* Create source map files for emitted JavaScript files. */
@@ -13,6 +18,33 @@
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
         "outDir": "./dist",
+        "baseUrl": "./src",
         "rootDir": "./src",
+        "paths": {
+            "@config/*": [
+                "config/*"
+            ],
+            "@utils/*": [
+                "utils/*"
+            ],
+            "@infra/*": [
+                "infra/*"
+            ],
+            "@app/*": [
+                "app/*"
+            ],
+            "@db/*": [
+                "db/*"
+            ],
+            "@routes/*": [
+                "app/routes/*"
+            ],
+            "@controllers/*": [
+                "app/controllers/*"
+            ],
+            "@logger/*": [
+                "infra/logging/*"
+            ]
+        },
     }
 }

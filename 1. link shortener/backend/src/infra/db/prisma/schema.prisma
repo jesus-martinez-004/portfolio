@@ -1,0 +1,101 @@
+// schema.prisma
+datasource db {
+  provider = "mysql"   // <-- Esto funciona con MariaDB
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+//
+// 🧱 MODELOS
+//
+
+// ==========================
+// Usuarios
+// ==========================
+model User {
+  id          Int       @id @default(autoincrement())
+  email       String    @unique
+  password    String
+  plan        String    @default("free")
+  createdAt   DateTime  @default(now())
+
+  // Relaciones
+  domains     Domain[]
+  urls        Url[]
+  apiTokens   ApiToken[]
+}
+
+// ==========================
+// Dominios personalizados
+// ==========================
+model Domain {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  domain      String
+  verified    Boolean   @default(false)
+  type        String?   // "A" | "CNAME"
+  createdAt   DateTime  @default(now())
+
+  // Relaciones
+  user        User      @relation(fields: [userId], references: [id])
+  urls        Url[]
+
+  @@unique([userId, domain])
+}
+
+// ==========================
+// URLs Cortas
+// ==========================
+model Url {
+  id           Int        @id @default(autoincrement())
+  userId       Int
+  domainId     Int?
+  shortCode    String      // ej: "abc123"
+  originalUrl  String
+  clicks       Int         @default(0)
+  createdAt    DateTime    @default(now())
+  expiresAt    DateTime?
+
+  // Relaciones
+  user         User        @relation(fields: [userId], references: [id])
+  domain       Domain?     @relation(fields: [domainId], references: [id])
+  clickEvents  ClickEvent[]
+
+  @@unique([domainId, shortCode])
+  @@index([shortCode])
+  @@index([userId])
+}
+
+// ==========================
+// Eventos de clic
+// ==========================
+model ClickEvent {
+  id         Int       @id @default(autoincrement())
+  urlId      Int
+  ip         String?
+  userAgent  String?
+  referer    String?
+  country    String?
+  createdAt  DateTime  @default(now())
+
+  // Relaciones
+  url        Url       @relation(fields: [urlId], references: [id])
+
+  @@index([urlId])
+}
+
+// ==========================
+// API Tokens (opcional)
+// ==========================
+model ApiToken {
+  id         Int       @id @default(autoincrement())
+  userId     Int
+  token      String    @unique
+  createdAt  DateTime  @default(now())
+  lastUsedAt DateTime?
+
+  user       User      @relation(fields: [userId], references: [id])
+}
