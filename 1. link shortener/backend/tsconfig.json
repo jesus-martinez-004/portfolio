@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "target": "ES2016", /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
+        "module": "Preserve", /* Specify what module code is generated. */
+        "declaration": false, /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
+        "declarationMap": false, /* Create sourcemaps for d.ts files. */
+        "sourceMap": false, /* Create source map files for emitted JavaScript files. */
+        "removeComments": false, /* Disable emitting comments. */
+        "forceConsistentCasingInFileNames": true, /* Ensure that casing is correct in imports. */
+        "strict": true, /* Enable all strict type-checking options. */
+        "noImplicitAny": true, /* Enable error reporting for expressions and declarations with an implied 'any' type. */
+        "skipLibCheck": true, /* Skip type checking all .d.ts files. */
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "outDir": "./dist",
+        "rootDir": "./src",
+    }
+}
