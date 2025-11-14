@@ -1,6 +1,6 @@
 // schema.prisma
 datasource db {
-  provider = "mysql"   // <-- Esto funciona con MariaDB
+  provider = "postgresql"   // <-- Esto funciona con MariaDB
   url      = env("DATABASE_URL")
 }
 
