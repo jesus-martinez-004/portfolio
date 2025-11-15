@@ -155,6 +155,7 @@ export class UrlService {
                 userAgent,
                 referer,
             });
+            this.urlRepo.incrementClicks(urlId);
         } catch (err: any) {
             // Nunca debe romper la redirección
             console.error("Error registering click:", err.message);
