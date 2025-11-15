@@ -9,6 +9,7 @@ import authRouter from "../app/routes/auth.routes";
 import { fakeUser } from "@app/middlewares/fakeUser.middleware";
 import { authMiddleware } from "@app/middlewares/auth.middleware";
 import domainRouter from "../app/routes/domain.routes";
+import { errorHandler } from "../app/middlewares/errorHandler.middleware";
 import { createRateLimiter } from "../infra/security/rateLimiter";
 import statsRouter from "../app/routes/stats.routes";
 import apiKeyRouter from "../app/routes/apiKey.routes";
@@ -53,7 +54,7 @@ export function createServer() {
     // app.use("/api/url", urlRoutes);
 
     // Manejo global de errores
-
+    app.use(errorHandler);
 
 
     return app;

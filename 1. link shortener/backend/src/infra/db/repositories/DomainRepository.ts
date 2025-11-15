@@ -1,6 +1,7 @@
 import prisma from "../connection";
 
 export class DomainRepository {
+
     async create(userId: number, domain: string, type?: string) {
         return prisma.domain.create({
             data: { userId, domain, type },
