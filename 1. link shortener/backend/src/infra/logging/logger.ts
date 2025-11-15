@@ -2,7 +2,7 @@
 import pino from "pino";
 import { env } from "@config/env";
 const isProd = env.NODE_ENV === "development";
-const isWindows = process.platform === "win32";
+const isWindows = true;
 
 export const logger = pino(
     isProd || isWindows
