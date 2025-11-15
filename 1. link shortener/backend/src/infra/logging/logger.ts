@@ -1,7 +1,7 @@
 // logger.ts
 import pino from "pino";
-
-const isProd = process.env.NODE_ENV === "production";
+import { env } from "@config/env";
+const isProd = env.NODE_ENV === "development";
 const isWindows = process.platform === "win32";
 
 export const logger = pino(

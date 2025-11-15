@@ -1,6 +1,8 @@
 import { UrlRepository } from "../../infra/db/repositories/UrlRepository";
 import { DomainRepository } from "../../infra/db/repositories/DomainRepository";
 import { ClickEventRepository } from "../../infra/db/repositories/ClickEventRepository";
+import { parseUserAgent } from "@utils/userAgentParser";
+import { getGeoInfo } from "@utils/geoIp";
 
 interface CreateShortUrlInput {
     userId: number;
@@ -67,14 +69,58 @@ export class UrlService {
         return url;
     }
 
-    async registerClick(urlId: number, data: { ip?: string; userAgent?: string; referer?: string; country?: string; domainId?: number | null }) {
-        return this.clickRepo.registerEvent({
-            urlId,
-            ip: data.ip || null,
-            userAgent: data.userAgent || null,
-            referer: data.referer || null,
-            country: data.country || null
-        });
+    async registerClick(
+        urlId: number,
+        data: {
+            ip: string | undefined;
+            userAgent: string | undefined;
+            referer: string | undefined;
+            country?: string | undefined; // Cloudflare or similar
+        }
+    ) {
+        try {
+            const ip = (data.ip || "").replace("::ffff:", "").trim();
+            const userAgent = data.userAgent || "";
+            const referer = data.referer || null;
+
+            // ============================
+            // 🔹 1. Analizar user agent
+            // ============================
+            const ua = parseUserAgent(userAgent);
+
+            // ----------------------------
+            // Opcional: ignorar bots
+            // ----------------------------
+            // if (ua.isBot) return;
+
+            // ============================
+            // 🔹 2. Geolocalización
+            // ============================
+            let geo:
+                | { country: string; city: string; latitude?: number; longitude?: number }
+                | null = null;
+
+            if (data.country) {
+                // si el proxy ya trae país (ej: Cloudflare)
+                geo = { country: data.country, city: "Unknown" };
+            } else {
+                geo = await getGeoInfo(ip);
+            }
+
+            // ============================
+            // 🔹 3. Guardar click
+            // ============================
+            await this.clickRepo.registerEvent({
+                urlId,
+                ip,
+                country: geo?.country || "UNKNOWN",
+                userAgent,
+                referer,
+            });
+        } catch (err) {
+            // nunca debe romper redirecciones
+            console.error("Error registering click:", err);
+        }
     }
 
     async listByUser(userId: number) {

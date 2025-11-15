@@ -13,6 +13,7 @@ const envSchema = z.object({
     JWT_SECRET: z.string().min(20, "JWT_SECRET debe ser seguro"),
     RATE_LIMIT_MAX: z.string().default("1000"),
     ORIGIN: z.string().optional(),
+    ACCESS_TOKEN_EXP: z.string().default("15m"),
 });
 
 const parsed = envSchema.safeParse(process.env);

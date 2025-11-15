@@ -9,12 +9,20 @@ import authRouter from "../app/routes/auth.routes";
 import { fakeUser } from "@app/middlewares/fakeUser.middleware";
 import { authMiddleware } from "@app/middlewares/auth.middleware";
 import domainRouter from "../app/routes/domain.routes";
+import { createRateLimiter } from "../infra/security/rateLimiter";
 
+const rateLimiter = createRateLimiter({
+    maxRequests: env.RATE_LIMIT_MAX ? Number(env.RATE_LIMIT_MAX) : 1000,
+    windowMs: 1000 * 60
+});
 export function createServer() {
     const app = express();
+    app.set("trust proxy", true);
+
 
     // Seguridad
     app.use(helmet());
+    app.use(rateLimiter);
 
     // CORS dinámico según env
     app.use(
@@ -36,7 +44,7 @@ export function createServer() {
         res.json({ status: "ok" });
     });
     app.use("/auth", authRouter);
-    app.use("/url", urlRouter);
+    app.use("/", urlRouter);
     app.use("/domains", authMiddleware, domainRouter);
 
 

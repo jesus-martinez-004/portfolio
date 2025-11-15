@@ -1,21 +1,16 @@
+// src/core/services/auth.service.ts
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { UserRepository } from "../../infra/db/repositories/UserRepository";
 import { ApiTokenRepository } from "../../infra/db/repositories/ApiTokenRepository";
-
-const ACCESS_TOKEN_EXP = "15m"; // ajustar si quieres
-const ACCESS_TOKEN_ALGO = { expiresIn: ACCESS_TOKEN_EXP };
+import { JwtHandler } from "../../infra/security/jwt";
 
 export class AuthService {
     private userRepo = new UserRepository();
     private apiTokenRepo = new ApiTokenRepository();
 
     private generateAccessToken(user: { id: number; email: string }) {
-        if (!process.env.JWT_SECRET) throw new Error("JWT_SECRET no definido");
-        return jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, {
-            expiresIn: ACCESS_TOKEN_EXP,
-        });
+        return JwtHandler.signAccessToken(user);
     }
 
     private generateRefreshToken() {
@@ -43,14 +38,12 @@ export class AuthService {
         const accessToken = this.generateAccessToken({ id: user.id, email: user.email });
         const refreshToken = this.generateRefreshToken();
 
-        // Guardar refresh token en la tabla ApiToken (modelo que ya tienes)
         await this.apiTokenRepo.create(user.id, refreshToken);
 
         return { accessToken, refreshToken, user };
     }
 
     // ========== Refresh ==========
-    // Devuelve nuevos tokens y rota refresh token (elimina el viejo y crea uno nuevo)
     async refresh(oldRefreshToken: string) {
         if (!oldRefreshToken) throw new Error("Refresh token no provisto");
 
@@ -59,12 +52,10 @@ export class AuthService {
 
         const user = await this.userRepo.findById(stored.userId);
         if (!user) {
-            // por seguridad: eliminar token si user inexistente
             await this.apiTokenRepo.delete(stored.id);
             throw new Error("Usuario vinculado al token no existe");
         }
 
-        // Rotar token
         await this.apiTokenRepo.delete(stored.id);
 
         const newRefresh = this.generateRefreshToken();
@@ -78,14 +69,15 @@ export class AuthService {
     // ========== Logout ==========
     async logout(refreshToken: string) {
         if (!refreshToken) return;
+
         const stored = await this.apiTokenRepo.findByToken(refreshToken);
         if (stored) await this.apiTokenRepo.delete(stored.id);
+
         return;
     }
 
-    // ========== Verify access token helper ==========
+    // ========== Verify token helper ==========
     verifyAccessToken(token: string) {
-        if (!process.env.JWT_SECRET) throw new Error("JWT_SECRET no definido");
-        return jwt.verify(token, process.env.JWT_SECRET) as any;
+        return JwtHandler.verifyAccessToken(token);
     }
 }
