@@ -26,6 +26,13 @@ export class DomainRepository {
         });
     }
 
+    async unverifyDomain(id: number) {
+        return prisma.domain.update({
+            where: { id },
+            data: { verified: false },
+        });
+    }
+
     async delete(id: number) {
         const urls = await prisma.url.findMany({
             where: { domainId: id },

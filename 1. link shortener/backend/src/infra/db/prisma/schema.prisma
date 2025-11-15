@@ -26,6 +26,8 @@ model User {
   domains     Domain[]
   urls        Url[]
   apiTokens   ApiToken[]
+  externalApiKeys ExternalApiKey[]
+
 }
 
 // ==========================
@@ -99,3 +101,15 @@ model ApiToken {
 
   user       User      @relation(fields: [userId], references: [id])
 }
+
+model ExternalApiKey {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  key        String   @unique
+  name       String?  // ejemplo: "Zapier Integration", "Mi App Móvil"
+  createdAt  DateTime @default(now())
+  lastUsedAt DateTime?
+
+  user       User     @relation(fields: [userId], references: [id])
+}
+

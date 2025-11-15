@@ -33,6 +33,7 @@ export class DomainService {
         try {
             // ======= Verificación real por CNAME =======
             // Usar un resolver confiable (Google / Cloudflare)
+            this.domainRepo.unverifyDomain(domainId);
             const resolver = new dns.Resolver();
             resolver.setServers(["8.8.8.8", "1.1.1.1"]);
 

@@ -11,6 +11,7 @@ import { authMiddleware } from "@app/middlewares/auth.middleware";
 import domainRouter from "../app/routes/domain.routes";
 import { createRateLimiter } from "../infra/security/rateLimiter";
 import statsRouter from "../app/routes/stats.routes";
+import apiKeyRouter from "../app/routes/apiKey.routes";
 
 const rateLimiter = createRateLimiter({
     maxRequests: env.RATE_LIMIT_MAX ? Number(env.RATE_LIMIT_MAX) : 1000,
@@ -48,6 +49,7 @@ export function createServer() {
     app.use("/", urlRouter);
     app.use("/domains", authMiddleware, domainRouter);
     app.use("/stats", authMiddleware, statsRouter);
+    app.use("/api-keys", authMiddleware, apiKeyRouter);
 
 
     // TODO: importar tus rutas reales
