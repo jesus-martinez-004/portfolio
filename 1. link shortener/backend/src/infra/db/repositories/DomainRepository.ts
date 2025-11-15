@@ -27,6 +27,24 @@ export class DomainRepository {
     }
 
     async delete(id: number) {
-        return prisma.domain.delete({ where: { id } });
+        const urls = await prisma.url.findMany({
+            where: { domainId: id },
+            select: { id: true },
+        });
+
+        const urlIds = urls.map(u => u.id);
+
+        if (urlIds.length > 0) {
+            await prisma.clickEvent.deleteMany({
+                where: { urlId: { in: urlIds } }
+            });
+            await prisma.url.deleteMany({
+                where: { id: { in: urlIds } }
+            });
+        }
+        return prisma.domain.delete({
+            where: { id }
+        });
     }
+
 }

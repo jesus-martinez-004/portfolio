@@ -33,6 +33,14 @@ export class UrlRepository {
     }
 
     async delete(id: number) {
-        return prisma.url.delete({ where: { id } });
+        // 1. Borrar clicks asociados
+        await prisma.clickEvent.deleteMany({
+            where: { urlId: id }
+        });
+
+        // 2. Borrar la URL
+        return prisma.url.delete({
+            where: { id }
+        });
     }
 }

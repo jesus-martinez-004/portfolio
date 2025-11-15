@@ -47,6 +47,10 @@ export class UrlService {
         });
     }
 
+    async findById(id: number) {
+        return this.urlRepo.findById(id);
+    }
+
     // Resolver shortCode considerando dominio y subdominios
     async resolveShortCode(shortCode: string, host: string) {
         let domainId: number | null = null;

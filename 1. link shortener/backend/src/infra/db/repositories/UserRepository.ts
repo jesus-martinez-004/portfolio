@@ -25,6 +25,31 @@ export class UserRepository {
     }
 
     async delete(id: number) {
-        return prisma.user.delete({ where: { id } });
+
+        await prisma.apiToken.deleteMany({
+            where: { userId: id }
+        });
+
+        const urls = await prisma.url.findMany({
+            where: { userId: id },
+            select: { id: true }
+        });
+
+        const urlIds = urls.map(u => u.id);
+
+        if (urlIds.length > 0) {
+            await prisma.clickEvent.deleteMany({
+                where: { urlId: { in: urlIds } }
+            });
+
+            await prisma.url.deleteMany({
+                where: { id: { in: urlIds } }
+            });
+        }
+
+        return prisma.user.delete({
+            where: { id }
+        });
     }
+
 }
