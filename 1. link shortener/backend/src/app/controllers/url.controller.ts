@@ -73,7 +73,6 @@ export class UrlController {
                         ? req.headers["cf-ipcountry"][0]
                         : req.headers["cf-ipcountry"] ?? undefined,
             });
-            urlService.incrementClicks(url.id);
 
             return res.redirect(url.originalUrl);
         } catch (err) {
