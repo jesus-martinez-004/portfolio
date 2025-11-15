@@ -27,11 +27,7 @@ export function createServer() {
     app.use(rateLimiter);
 
     // CORS dinámico según env
-    app.use(
-        cors({
-            origin: env.ORIGIN || "*",
-        })
-    );
+    app.use(cors());
 
     // Body parsers
     app.use(express.json());
