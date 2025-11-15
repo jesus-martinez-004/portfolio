@@ -3,6 +3,7 @@ import { DomainRepository } from "../../infra/db/repositories/DomainRepository";
 import { ClickEventRepository } from "../../infra/db/repositories/ClickEventRepository";
 import { parseUserAgent } from "@utils/userAgentParser";
 import { getGeoInfo } from "@utils/geoIp";
+import { th } from "zod/v4/locales";
 
 interface CreateShortUrlInput {
     userId: number;
@@ -27,11 +28,12 @@ export class UrlService {
     }
 
     async createShortUrl(input: CreateShortUrlInput) {
-        let shortCode = input.customCode || this.generateShortCode();
+        let shortCode = input.customCode ?? 'default';
 
         // Evitar colisiones
         let exists = await this.urlRepo.findByShortCode(shortCode, input.domainId || null);
-        while (exists) {
+        if (exists && shortCode != 'default') throw new Error("Ya existe un URL con ese código")
+        while (exists || shortCode == 'default') {
             shortCode = this.generateShortCode();
             exists = await this.urlRepo.findByShortCode(shortCode, input.domainId || null);
         }
