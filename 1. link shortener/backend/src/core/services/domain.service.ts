@@ -81,12 +81,9 @@ export class DomainService {
                     received: cnames,
                 });
             }
-
-            // Finalmente marcar como verificado
             return this.domainRepo.verifyDomain(domainId);
 
         } catch (err: any) {
-            // Resolver falló (NXDOMAIN, timeout, etc.)
             if (err.code === "ENOTFOUND" || err.code === "ENODATA") {
                 throw BadRequest("No se encontraron registros DNS válidos para el dominio", {
                     domain: host,

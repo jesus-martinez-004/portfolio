@@ -53,7 +53,16 @@ export class AuthService {
         const hashed = await bcrypt.hash(password, 10);
 
         const user = await this.userRepo.create({ email, password: hashed });
-        return user;
+        const accessToken = this.generateAccessToken({
+            id: user.id,
+            email: user.email,
+        });
+
+        const refreshToken = this.generateRefreshToken();
+
+        await this.apiTokenRepo.create(user.id, refreshToken);
+
+        return { accessToken, refreshToken, user };
     }
 
     // ============================
